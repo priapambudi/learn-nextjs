@@ -1,11 +1,11 @@
 import FoodCard from "@/components/FoodCard";
+import FoodForm from "@/components/FoodForm";
 import BaseLayout from "@/layouts/BaseLayout";
 import axios from "axios";
-import { useRouter } from "next/router";
 
 export async function getServerSideProps(context) {
   const resp = await axios.get(
-    "https://api-bootcamp.do.dibimbing.id/api/v1/foods",
+    `https://api-bootcamp.do.dibimbing.id/api/v1/foods/${context.params.id}`,
     {
       headers: {
         apiKey: "w05KkI9AWhKxzvPFtXotUva-",
@@ -15,20 +15,24 @@ export async function getServerSideProps(context) {
       },
     }
   );
-  //   console.log(resp);
+  //   console.log(resp.data);
   const data = resp.data.data;
-  return { props: { foods: data } };
+  return { props: { food: data } };
 }
 
-export default function PostDetail({ foods }) {
-  const router = useRouter();
+export default function FoodDetail({ food }) {
   return (
     <BaseLayout>
-      <ul className="flex flex-wrap justify-center gap-4 space-y-4">
-        {foods.map((food) => (
-          <FoodCard key={food.id} food={food} />
-        ))}
-      </ul>
+      <div className="flex flex-col items-center">
+        <FoodCard food={food} clickable={false} />
+        <FoodForm
+          isEdit={true}
+          defaultFormData={{
+            name: food.name,
+            imageUrl: food.imageUrl,
+          }}
+        />
+      </div>
     </BaseLayout>
   );
 }
